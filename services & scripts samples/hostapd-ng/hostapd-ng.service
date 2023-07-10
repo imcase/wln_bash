@@ -1,0 +1,19 @@
+[Unit]
+Description=enables/disables hostapd-ng daemon
+Wants=network.target
+After=ip6tables.service
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=true
+ExecStart=/usr/local/bin/hostapd-ng.sh enable
+ExecStartPost=systemctl start hostapd-ng-autorecover.timer
+ExecStop=/usr/local/bin/hostapd-ng.sh disable
+ExecStopPost=systemctl stop hostapd-ng-autorecover.timer
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

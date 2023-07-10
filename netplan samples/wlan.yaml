@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    wlan0:
+      dhcp4: no
+  bridges:
+    br0:
+      interfaces: [wlan0]
+      addresses: [192.45.46.1/24]
+      nameservers: {}
+      addresses: [2001:45:46::1/64]
+      nameservers: {}

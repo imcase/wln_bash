@@ -1,0 +1,5 @@
+network={
+	ssid="hond_5G"
+	key_mgmt=WPA-PSK
+	psk="viezevuilehond"
+}

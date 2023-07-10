@@ -1,0 +1,4 @@
+network={
+	ssid="vvh"
+	key_mgmt=NONE
+}

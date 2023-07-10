@@ -1,0 +1,21 @@
+#How to DELETE interfaces From Bridge
+#Remark:
+#	This is especially needed when using AP-mode
+#sudo brctl delif br0 eth0
+#sudo brctl delif br0 eth1
+#sudo brctl delif br0 wlan0  
+sudo ip link set dev br0 down
+sudo ip link del br0
+#sudo brctl delbr br0
+sudo netplan apply
+
+#How to add interfaces To Bridge
+#Remark:
+#	This is especially needed when using AP-mode
+#sudo brctl addbr br0
+sudo ip link add name br0 type bridge
+sudo ip link set dev br0 up
+#sudo brctl addif br0 eth0
+#sudo brctl addif br0 eth1
+#sudo brctl addif br0 wlan0
+sudo netplan apply

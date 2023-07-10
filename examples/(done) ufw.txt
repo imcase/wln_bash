@@ -1,0 +1,6 @@
+#---Allow ports: 53, 67,68, 547, 5553
+sudo ufw allow 53
+sudo ufw allow 67
+sudo ufw allow 68
+sudo ufw allow 547
+sudo ufw allow 5553

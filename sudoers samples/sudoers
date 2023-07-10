@@ -1,0 +1,114 @@
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+Defaults	env_reset
+Defaults	mail_badpass
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+
+#---:MY ADDED SUDOERS:---
+ubuntu ALL=(ALL:ALL) ALL
+
+#---:ALLOW TO EXEC COMMANDS /W SUDO BUT W/O PASSWD INPUT:---
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * update
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * bridge-utils
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * dnsmasq
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * hostapd
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * iw
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * wireless-tools
+ubuntu  ALL=(root) NOPASSWD: /bin/apt-get -y * wpasupplicant
+ubuntu  ALL=(root) NOPASSWD: /bin/cat /etc/tibbo/*/intfstates_ctx.dat*
+ubuntu  ALL=(root) NOPASSWD: /bin/chmod 755 /usr/local/bin/hostapd-ng*
+ubuntu  ALL=(root) NOPASSWD: /bin/chmod *ntios-net-autoresetconnect*
+ubuntu  ALL=(root) NOPASSWD: /bin/chmod *wifi-powersave-off*
+ubuntu  ALL=(root) NOPASSWD: /bin/chmod * /etc/ip*ables/rules*.v*
+ubuntu  ALL=(root) NOPASSWD: /bin/grep * /etc/tibbo/*/intfstates_ctx.dat*
+ubuntu  ALL=(root) NOPASSWD: /bin/mkdir -p /etc/ip*ables
+ubuntu  ALL=(root) NOPASSWD: /bin/mkdir -p /etc/tibbo/*
+ubuntu  ALL=(root) NOPASSWD: /bin/rm *ntios-net-autoresetconnect*
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/dnsmasq.conf
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/default/hostapd
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/hostapd/hostapd.conf
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/netplan/*.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/tibbo/netplan/net/*.yaml.autoresetconnect
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/netplan/wlan.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/systemd/system/hostapd-ng*
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /etc/tibbo/*/intfstates_ctx.dat
+ubuntu  ALL=(root) NOPASSWD: /bin/rm /usr/local/bin/hostapd-ng*
+ubuntu  ALL=(root) NOPASSWD: /bin/rm *wifi-powersave-off*
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i *d /etc/netplan/wlan.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i *i * /etc/netplan/wlan.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i *s/*net*/net*/g*
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i */etc/tibbo/*/intfstates_ctx.dat
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i */ccode*/*ccode* /etc/firmware/config.txt
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl daemon-reload
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * dnsmasq.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * hostapd.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * hostapd-ng.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * ip*ables.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * ntios-net-autoresetconnect*
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * wifi-powersave-off*
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * wpa_supplicant.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * wpa_supplicant_*.service
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/dnsmasq.conf
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/default/hostapd
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/hostapd/hostapd.conf
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/netplan/*.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/tibbo/netplan/net/*.yaml.autoresetconnect
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/netplan/wlan.yaml
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/systemd/system/hostapd-ng*
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/systemd/system/ip*tables.service
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/tibbo/*/intfstates_ctx.dat
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /usr/local/bin/hostapd-ng*
+ubuntu  ALL=(root) NOPASSWD: /bin/tee *ntios-net-autoresetconnect*
+ubuntu  ALL=(root) NOPASSWD: /bin/tee *wifi-powersave-off*
+ubuntu  ALL=(root) NOPASSWD: /bin/touch /etc/ip*ables/rules*.v*
+ubuntu  ALL=(root) NOPASSWD: /sbin/brctl *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip * add *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip * del *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip * flush *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip * set *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -A INPUT -i * -j ACCEPT
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -A INPUT -m state --state RELATED*ESTABLISHED -j ACCEPT
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -t nat -A POSTROUTING -o * -j MASQUERADE
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -A FORWARD -i * -o br0 -m state --state RELATED*ESTABLISHED -j ACCEPT
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -A FORWARD -i br0 -o * -j ACCEPT
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -S*
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables -t nat -S*
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables-restore *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip*ables-save *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iw *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iwlist *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iwconfig *
+ubuntu  ALL=(root) NOPASSWD: /sbin/modprobe bcmdhd
+ubuntu  ALL=(root) NOPASSWD: /sbin/netplan apply
+ubuntu  ALL=(root) NOPASSWD: /sbin/sysctl -p
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 53
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 67
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 68
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 547
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 5553
+ubuntu  ALL=(root) NOPASSWD: /sbin/wpa_supplicant -B -c * -f /run/netplan/wpa-wlan0.conf -iwlan0

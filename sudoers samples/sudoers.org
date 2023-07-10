@@ -1,0 +1,65 @@
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+Defaults	env_reset
+Defaults	mail_badpass
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+
+#---:MY ADDED SUDOERS:---
+ubuntu ALL=(ALL:ALL) ALL
+
+#---:ALLOW TO EXEC COMMANDS /W SUDO BUT W/O PASSWD INPUT:---
+ubuntu  ALL=(root) NOPASSWD: /bin/apt -y install dnsmasq
+ubuntu  ALL=(root) NOPASSWD: /bin/apt -y install hostapd
+ubuntu  ALL=(root) NOPASSWD: /bin/apt -y install iw
+ubuntu  ALL=(root) NOPASSWD: /bin/apt -y install wireless-tools
+ubuntu  ALL=(root) NOPASSWD: /bin/chmod *wifipwrmgmt*
+ubuntu  ALL=(root) NOPASSWD: /bin/pkill -9 wpa_supplicant
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i 's/^#net*/net*
+ubuntu  ALL=(root) NOPASSWD: /bin/sed -i 's/#DAEMON_CONF*/DAEMON_CONF*
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl daemon-reload
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * dnsmasq.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * hostapd.service
+ubuntu  ALL=(root) NOPASSWD: /bin/systemctl * wpa_supplicant.service
+ubuntu  ALL=(root) NOPASSWD: /bin/tee *wifipwrmgmt*
+ubuntu  ALL=(root) NOPASSWD: /bin/tee /etc/hostapd*
+ubuntu  ALL=(root) NOPASSWD: /etc/profile.d/wifipwrmgmt_run.sh
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip * set *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iptables -S *
+ubuntu  ALL=(root) NOPASSWD: /sbin/ip6tables -S *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iw *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iwlist *
+ubuntu  ALL=(root) NOPASSWD: /sbin/iwconfig *
+ubuntu  ALL=(root) NOPASSWD: /sbin/modprobe bcmdhd
+ubuntu  ALL=(root) NOPASSWD: /sbin/netplan apply
+ubuntu  ALL=(root) NOPASSWD: /sbin/sysctl -p
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 53
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 67
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 68
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 547
+ubuntu  ALL=(root) NOPASSWD: /sbin/ufw allow 5553
+ubuntu  ALL=(root) NOPASSWD: /usr/local/bin/wifipwrmgmt.sh *

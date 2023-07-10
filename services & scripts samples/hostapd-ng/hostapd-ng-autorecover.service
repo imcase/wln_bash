@@ -1,0 +1,16 @@
+[Unit]
+Description=auto recovers hostapd-ng daemon when wireless interface goes down then up
+Requires=sys-subsystem-net-devices-wlan0.device
+After=network.target
+Wants=hostapd-ng-autorecover.timer
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+ExecStart=/usr/local/bin/hostapd-ng-autorecover.sh
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

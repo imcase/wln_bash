@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: networkd
+  wifis:
+    wlan0:
+      addresses: [172.31.1.119/24,2001:172:31:1::119/64]
+      gateway4: "172.31.1.254"
+      gateway6: "2001:172:31:1::254"
+      nameservers:
+        addresses: [8.8.8.8,172.31.1.254,8:8:8::8,2001:172:31:1::254]
+      access-points:
+        "hond_5G":
+          password: "viezevuilehond"

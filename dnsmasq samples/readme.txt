@@ -1,0 +1,1 @@
+location: /etc/dnsmasq.conf

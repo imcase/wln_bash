@@ -1,0 +1,173 @@
+#!/bin/bash
+#---Input args
+#Possible input values: enable | disable
+ACTION=${1}
+
+
+
+#---COLORS CONSTANTS
+NOCOLOR=$'\e[0m'
+FG_LIGHTRED=$'\e[1;31m'
+FG_ORANGE=$'\e[30;38;5;209m'
+FG_LIGHTGREY=$'\e[30;38;5;246m'
+FG_LIGHTGREEN=$'\e[30;38;5;71m'
+FG_SOFLIGHTRED=$'\e[30;38;5;131m'
+
+#---BOOLEAN CONSTANTS
+ENABLE="enable"
+DISABLE="disable"
+
+#---COUNTER CONSTANTS
+START_RETRY_MAX=3
+
+#---PATTERN CONSTANTS
+PATTERN_GREP="grep"
+
+#---ENVIRONMENT VARIABLES
+HOSTAPD="hostapd"
+HOSTAPD_NG="hostapd-ng"
+HOSTAPD_CONF="${HOSTAPD}.conf"
+HOSTAPD_NG_LOG="${HOSTAPD_NG}.log"
+HOSTAPD_NG_PID="${HOSTAPD_NG}.pid"
+HOSTAPD_NG_SERVICE="${HOSTAPD_NG}.service"
+hostapd_conf_fpath=/etc/${HOSTAPD}/${HOSTAPD_CONF}
+hostapd_exec_fpath=/usr/sbin/${HOSTAPD}
+hostapd_log_fpath=/tmp/${HOSTAPD_NG_LOG}
+hostapd_pid_fpath=/run/${HOSTAPD_NG_PID}
+
+#---COMMAND VARIABLES
+hostapd_daemon_run_cmd="${hostapd_exec_fpath} -B -P ${hostapd_pid_fpath} -f ${hostapd_log_fpath} ${hostapd_conf_fpath}"
+hostapd_daemon_pid_kill_cmd="kill -9 \$(cat ${hostapd_pid_fpath})"
+hostapd_daemon_pspid_retrieve_cmd="ps axf | grep \"${hostapd_exec_fpath}\" | grep -v \"${PATTERN_GREP}\""
+hostapd_daemon_proc_kill_cmd="pkill -9 ${HOSTAPD}"
+
+#---GENERAL VARIABLES
+start_retry=0
+tcounter_sec=1
+
+
+
+#---FUNCTIONS
+hostapd_cleanup_files() {
+    if [[ -f "${hostapd_pid_fpath}" ]]; then
+        rm "${hostapd_pid_fpath}"
+    fi
+
+    if [[ -f "${hostapd_log_fpath}" ]]; then
+        rm "${hostapd_log_fpath}"
+    fi
+}
+
+hostapd_start() {
+    #Start loop
+    while [[ ${start_retry} -lt ${START_RETRY_MAX} ]]
+    do
+        #Run hostapd-daemon
+        eval ${hostapd_daemon_run_cmd}
+        #Check if pid-file has been created
+        if [[ -f "${hostapd_pid_fpath}" ]]; then
+            break
+        fi
+
+        #Increment index
+        ((start_retry++))
+    done
+}
+
+hostapd_start_print() {
+    #Define variables
+    local print_status=""
+    local print_pid=0
+
+    local hostapd_daemon_pid=0
+
+    #Get pid from file
+    hostapd_daemon_pid=$(cat ${hostapd_pid_fpath})
+
+    #Check hostapd-ng daemon was started successfully.
+    if [[ -f "${hostapd_pid_fpath}" ]]; then    #successful
+        print_status="${FG_LIGHTGREEN}SUCCESSFUL${NOCOLOR}"
+    else    #failed
+        print_status="${FG_SOFLIGHTRED}FAILED${NOCOLOR}"
+
+        #IMPORTANT: Stop hostapd-ng service
+        systemctl stop ${HOSTAPD_NG_SERVICE}
+    fi
+
+    #Print
+    echo -e "\r"
+    echo -e ":-->${FG_ORANGE}STATUS${NOCOLOR}: Start ${FG_LIGHTGREY}${HOSTAPD_NG} -> PID (${NOCOLOR}${hostapd_daemon_pid}${FG_LIGHTGREY})${NOCOLOR}: ${print_status}"
+    echo -e "\r"
+}
+
+hostapd_stop() {
+    #Kill deamon based on pid found in /run/hostapd-ng.pid
+	if [[ -f "${hostapd_pid_fpath}" ]]; then
+        eval ${hostapd_daemon_pid_kill_cmd}
+    fi
+
+    #Double-check if pid has been killed
+    if [[ -n $(eval ${hostapd_daemon_pspid_retrieve_cmd}) ]]; then
+        eval ${hostapd_daemon_proc_kill_cmd}
+    fi
+}
+
+hostapd_stop_print() {
+    #Define variables
+    local print_status=""
+    local hostapd_daemon_pid=0
+
+    #Get pid from file
+    hostapd_daemon_pid=$(cat ${hostapd_pid_fpath})
+
+    #Check if pid was killed
+    if [[ -z $(eval ${hostapd_daemon_pspid_retrieve_cmd}) ]]; then  #is Empty String
+        print_status="${FG_LIGHTGREEN}SUCCESSFUL${NOCOLOR}"
+    else    #is Not Empty String
+        print_status="${FG_SOFLIGHTRED}FAILED${NOCOLOR}"
+    fi
+
+    #Print
+    echo -e "\r"
+    echo -e ":-->${FG_ORANGE}STATUS${NOCOLOR}: Stop ${FG_LIGHTGREY}${HOSTAPD_NG} -> PID (${NOCOLOR}${hostapd_daemon_pid}${FG_LIGHTGREY})${NOCOLOR}: ${print_status}"
+    echo -e "\r"
+}
+
+
+
+#---SUBROUTINES
+stop_handler() {
+    #Stop hostapd daemons
+    hostapd_stop
+
+    #Print
+    hostapd_stop_print
+
+    #Cleanup files
+    hostapd_cleanup_files
+}
+
+start_handler() {
+    #Stop hostapd daemons (which were not killed last time)
+    hostapd_stop
+
+    #Clean files (which were not cleaned up last time)
+    hostapd_cleanup_files
+
+    #Initial start hostapd-daemon
+    hostapd_start
+    hostapd_start_print
+}
+
+
+
+#---Select case
+case "${ACTION}" in
+    ${ENABLE})
+        #Start subroutine in the BACKGROUND (&)
+        start_handler
+        ;;
+    ${DISABLE})
+        stop_handler
+        ;;
+esac

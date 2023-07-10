@@ -1,0 +1,48 @@
+#---REMOVE OLD WLAN NETPLAN ENTRIES (IF NEEDED)
+sudo rm /etc/netplan/*.yaml
+
+
+
+#---CREATE NEW WIRED NETPLAN ENTRIES
+#Remark: THIS MUST BE CREATED!!!
+sudo tee -a /etc/netplan/*.yaml > /dev/null <<EOT
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no 
+      dhcp6: no
+    eth1:
+      dhcp4: no
+      dhcp6: no
+
+EOT
+
+
+
+#---REMOVE OLD WLAN NETPLAN ENTRIES (IF NEEDED)
+sudo rm /etc/netplan/wlan.yaml
+
+
+
+#---CREATE NEW WLAN NETPLAN ENTRIES
+#Remarks:
+#	1. pay attention to 'interfaces' under 'bridges'
+#	2. no need to configure any ip-address for any interfaces.
+sudo tee -a /etc/netplan/wlan.yaml > /dev/null <<EOT
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    wlan0:
+      dhcp4: no
+      dhcp6: no
+  bridges:
+    br0:
+      interfaces:
+        - wlan0
+        - eth0
+        - eth1
+
+EOT

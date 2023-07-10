@@ -1,0 +1,12 @@
+#---SET DOMAIN-CODE
+#Remark: the set domain-code will not be resetted after a reboot
+sudo iw reg set TW
+
+
+
+#---DISABLE WLAN0 POWER-MANAGEMENT
+#Remarks:
+# the set power-management will be RESETTED after a reboot
+# Perhaps a service is needed to be created
+sudo iwconfig wlan0 power off
+

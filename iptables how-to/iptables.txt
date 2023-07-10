@@ -1,0 +1,124 @@
+#IPTABLES: ADD RULES
+#---INFO REGARDING INTERFACES:
+#		br0 is LAN
+#		eth0 is WAN
+
+#---ALWAYS ACCEPT LOOP-BACK TRAFFIC
+sudo iptables -A INPUT -i lo -j ACCEPT
+
+#---ALLOW LAN TRAFFIC
+sudo iptables -A INPUT -i br0 -j ACCEPT
+
+#---ALLOW ESTABLISHED CONNECTIONS
+sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#---MASQUERADE
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+#---FORWARDING FROM eth0 to br0
+sudo iptables -A FORWARD -i eth0 -o br0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#---ALLOW OUTGOING CONNECTIONS FROM LAN
+sudo iptables -A FORWARD -i br0 -o eth0 -j ACCEPT
+
+
+
+#IP6TABLES: ADD RULES
+#---INFO REGARDING INTERFACES:
+#		br0 is LAN
+#		eth0 is WAN
+
+#---ALWAYS ACCEPT LOOP-BACK TRAFFIC
+sudo ip6tables -A INPUT -i lo -j ACCEPT
+
+#---ALLOW LAN TRAFFIC
+sudo ip6tables -A INPUT -i br0 -j ACCEPT
+
+#---ALLOW ESTABLISHED CONNECTIONS
+sudo ip6tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#---MASQUERADE
+sudo ip6tables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+#---FORWARDING FROM eth0 to br0
+sudo ip6tables -A FORWARD -i eth0 -o br0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#---ALLOW OUTGOING CONNECTIONS FROM LAN
+sudo ip6tables -A FORWARD -i br0 -o eth0 -j ACCEPT
+
+
+
+#SAVE IPTABLBES & IP6TABLES
+#---DEFINE VARIABLES
+daemon_reload_svc="daemon-reload"
+dnsmasq_svc="dnsmasq"
+ip46tables_restore_svc="ip46tables-restore.service"
+resolv_svc="systemd-resolved"
+tayga_svc="tayga.service"
+
+iptables_fpath="/etc/iptables"
+iptables_restore_fpath="/sbin/iptables-restore"
+ip46tables_restore_svc_fpath="/etc/systemd/system/${ip46tables_restore_svc}"
+ip6tables_fpath="/etc/ip6tables"
+ip6tables_restore_fpath="/sbin/ip6tables-restore"
+rulesv4_fpath="${iptables_fpath}/rules.v4"
+rulesv6_fpath="${ip6tables_fpath}/rules.v6"
+
+
+#---Create files and folders
+echo "...new dir: create '${iptables_fpath}'"
+sudo mkdir -p ${iptables_fpath}
+
+echo "...new dir: create '${ip6tables_fpath}'"
+sudo mkdir -p ${ip6tables_fpath}
+
+#---Create an empty file /etc/iptables/
+echo "...new file: create '${rulesv4_fpath}'"
+sudo touch ${rulesv4_fpath}
+
+echo "...new file: create '${rulesv6_fpath}'"
+sudo touch ${rulesv6_fpath}
+
+#---Change permission
+echo "...new file: change permission of '${rulesv4_fpath}' to '776'"
+sudo chmod 776 ${rulesv4_fpath}
+
+echo "...new file: change permission of '${rulesv6_fpath}' to '776'"
+sudo chmod 776 ${rulesv6_fpath}
+
+#---Save current iptables rules to file '/etc/iptables/rules.v4'
+echo "...iptables: save"
+sudo /sbin/iptables-save > ${rulesv4_fpath}
+
+echo "...ip6tables: save"
+sudo /sbin/ip6tables-save > ${rulesv6_fpath}
+
+
+
+#---Create a service to restore '/etc/iptables/rules.v4'
+echo "...service: create '${ip46tables_restore_svc_fpath}'"
+
+sudo tee -a ${ip46tables_restore_svc_fpath} > /dev/null <<EOT
+[Unit]
+Description=Restore ${rulesv4_fpath}
+After=hostapd-ng.service
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=yes
+ExecStart=${bash_fpath} -c '${iptables_restore_fpath} < ${rulesv4_fpath}'
+ExecStart=${bash_fpath} -c '${ip6tables_restore_fpath} < ${rulesv6_fpath}'
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+#---Enable & Start Service 'iptables-restore.service'
+echo "...service: reload daemon"
+sudo systemctl ${daemon_reload_svc}
+echo "...service: enable '${ip46tables_restore_svc}'"
+sudo systemctl enable ${ip46tables_restore_svc}
+echo "...service: start '${ip46tables_restore_svc}'"
+sudo systemctl start ${ip46tables_restore_svc}

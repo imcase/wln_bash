@@ -1,0 +1,54 @@
+COMMAND TO CONNECT TO SSID (BEFORE NETPLAN CONFIG):
+    sudo /sbin/wpa_supplicant -B -c /etc/wpa_supplicant.conf -iwlan0
+    sudo /sbin/wpa_supplicant -B -c /etc/wpa_supplicant.conf -f /etc/wln/wpa_supplicant.log -iwlan0
+
+COMMAND FOUND IN PS AXF AFTER RUNNING NETPLAN APPLY: 
+    sudo /sbin/wpa_supplicant -c /run/netplan/wpa-wlan0.conf -iwlan0 (implicitely started after executing 'netplan apply')
+
+
+/sbin/wpa_supplicant -B -c /run/netplan/wpa-wlan0.conf -f /etc/wln/wpa_wlan0.log -iwlan0
+
+#PS AXF WHEN RUNNING: systemctl start wpa_supplicant.service
+ 8247 ?        Ss     0:00 /sbin/wpa_supplicant -u -s -O /run/wpa_supplicant
+
+ #PS AXF WHEN RUNNING: netplan apply
+ 9725 ?        Ss     0:00 /sbin/wpa_supplicant -c /run/netplan/wpa-wlan0.conf -iwlan0 -Dnl80211,wext
+
+
+#WPA_SUPPLICANT SERVICE
+sudo systemctl status wpa_supplicant.service
+sudo systemctl enable wpa_supplicant.service
+sudo systemctl disable wpa_supplicant.service
+sudo systemctl stop wpa_supplicant.service
+sudo systemctl start wpa_supplicant.service
+sudo systemctl restart wpa_supplicant.service
+
+
+#FLUSH INTERFACE
+sudo ip addr flush dev wlan0
+
+
+#***IMPORTANT TO KNOW***
+#   INVALID IPv4 and/or IPv6 address data DOES NOT PREVENT
+#       the ltpp3-g2 from establishing a wifi connection to
+#       a specified SSID.
+#   The problem is that due to the invalid provided
+#       IPv4 and/or IPv6 address data, communication with other
+#       devices is not possible.
+#   If the IPv4 and/or IPv6 address are:
+#   1. valid BUT not within the SSID IP-range -> executing command 'ip a' will show the ip-addresses
+#   2. invalid -> executing command 'ip a' will NOT show the ip-addresses
+#   3. /etc/wpa_supplicant.conf -> this configuration file is NOT needed.
+
+
+#***Useful commands for testing****
+#Kill all wpa_supplicant processes
+sudo pkill -9 wpa_supplicant
+#Flush wlan0 ip-address data (ipv4 and ipv6)
+sudo ip addr flush dev wlan0
+#Apply netplan to make any new changes to 'wlan.yaml' take effect
+sudo netplan apply
+#Kill all wpa_supplicant processes (actually only wpa_supplicant netplan daemon should be killed. This command is used out of laziness)
+sudo pkill -9 wpa
+#Run wpa_supplicant netplan daemon with log-file
+sudo /sbin/wpa_supplicant -B -c /run/netplan/wpa-wlan0.conf -f /etc/wln/wpa_wlan0.log -iwlan0

@@ -1,0 +1,1 @@
+location: /etc/hostapd/hostapd.conf

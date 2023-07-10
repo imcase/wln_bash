@@ -1,0 +1,23 @@
+[Unit]
+Description=resets/restores the ethernet interfaces' ip-address before shutdown
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=true
+
+ExecStart=/usr/bin/systemctl enable ntios-net-reloadconnect.service
+ExecStartPost=/usr/bin/systemctl disable ntios-net-resetconnect.service
+ExecStartPost=/usr/bin/systemctl disable ntios-net-autoreconnectonboot.service
+
+ExecStop=/usr/bin/systemctl enable ntios-net-resetconnect.service
+ExecStopPost=/usr/bin/systemctl disable ntios-net-reloadconnect.service
+ExecStopPost=/usr/bin/systemctl disable ntios-net-autoreconnectonboot.service
+
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+#---DNS configuration
+port=5553
+
+#---Domain options
+domain-needed
+domain=tibbo.com
+
+#---DHCP configuration
+interface=eth1
+dhcp-ignore=1.2.0.1
+dhcp-ignore=1:2::1
+dhcp-range=1.2.0.1,1.2.0.200,12h
+dhcp-range=1:2::1,1:2::200,12h
+dhcp-option=option:router,1.2.0.1
+dhcp-option=option:dns-server,8.8.8.8,1.2.0.1
+dhcp-option=option6:dns-server,2001:4860:4860::8888,1:2::1
+
+#---Other options
+bogus-priv
+strict-order
+expand-hosts
+bind-interfaces
+enable-ra
+dhcp-authoritative

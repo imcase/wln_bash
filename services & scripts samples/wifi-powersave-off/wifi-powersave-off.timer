@@ -1,0 +1,24 @@
+#--------------------------------------------------------------------
+# Remarks:
+# 1. In order for the service to run after a reboot
+#    make sure to create a 'symlink'
+#    ln -s /etc/systemd/system/<myservice.timer> /etc/systemd/system/multi-user.target.wants/<myservice.timer>
+# 2. Reload daemon: systemctl daemon-reload
+# 3. Start Service: systemctl start <myservice.timer>
+# 4. Check status: systemctl status <myservice.timer>
+#--------------------------------------------------------------------
+[Unit]
+Description=Run wifi-powersave-off.service every 5 sec (active-state) and 5 sec (idle-state)
+Requires=wifi-powersave-off.service
+
+[Timer]
+#Run on boot after 1 seconds
+OnBootSec=1s
+#Run script every 5 sec when Device is Active
+OnUnitActiveSec=5s
+#Run script every 5 sec when Device is Idle
+OnUnitInactiveSec=5s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

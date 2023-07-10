@@ -1,0 +1,20 @@
+[Unit]
+Description=resets/restores the etherwln interfaces' ip-address before shutdown
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=true
+
+ExecStart=/usr/bin/systemctl enable ntios-wln-reloadconnect.service
+ExecStartPost=/usr/bin/systemctl disable ntios-wln-resetconnect.service
+ExecStartPost=/usr/bin/systemctl disable ntios-wln-autoreconnectonboot.service
+
+ExecStop=/usr/bin/systemctl enable ntios-wln-resetconnect.service
+ExecStopPost=/usr/bin/systemctl disable ntios-wln-reloadconnect.service
+ExecStopPost=/usr/bin/systemctl disable ntios-wln-autoreconnectonboot.service
+
+[Install]
+WantedBy=multi-user.target

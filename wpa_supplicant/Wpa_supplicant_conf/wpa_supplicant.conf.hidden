@@ -1,0 +1,6 @@
+network={
+	ssid="hond"
+scan_ssid=1
+	#psk="viezevuilehond"
+	psk=9f3044374e9f8b01ea8c926a7051e2d24126b405e42bffa133b38d11a1a6d628
+}

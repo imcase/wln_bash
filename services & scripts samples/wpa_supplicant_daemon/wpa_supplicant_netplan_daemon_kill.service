@@ -1,0 +1,27 @@
+#--------------------------------------------------------------------
+# Remarks:
+#   This service is required to kill the wpa_supplicant daemon, which
+#       is initiated by netplan (especially after a power off/on).
+#   Using the ps-command, the following process is seen:
+#       /sbin/wpa_supplicant -c /run/netplan/wpa-wlan0.conf -iwlan0 -Dnl80211,wext
+#   In case an error occurs when trying to start the service, please
+#       check the permissions of the script 'wpa_supplicant_netplan_daemon_kill.sh'.
+#   The permission should be 755 (rwxr-xr-x).
+#--------------------------------------------------------------------
+[Unit]
+Description=enables/disables wpa_supplicant_netplan_daemon_kill.service
+After=network.target
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=true
+
+ExecStart=/usr/local/bin/wpa_supplicant_netplan_daemon_kill.sh enable
+ExecStop=/usr/local/bin/wpa_supplicant_netplan_daemon_kill.sh disable
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

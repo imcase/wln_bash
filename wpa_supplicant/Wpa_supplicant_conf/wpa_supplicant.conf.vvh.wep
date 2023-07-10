@@ -1,0 +1,6 @@
+network={
+	ssid="vvh"
+	key_mgmt=NONE
+	wep_key1=1234567890
+	wep_tx_keyidx=0
+}

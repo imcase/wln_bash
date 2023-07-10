@@ -1,0 +1,27 @@
+#--------------------------------------------------------------------
+# Remarks:
+# 1. In order for the service to run after a reboot
+#		make sure to create a 'symlink'
+#		ln -s /etc/systemd/system/<myservice.service> /etc/systemd/system/multi-user.target.wants/<myservice.service>
+# 2. Reload daemon: systemctl daemon-reload
+# 3. Start Service: systemctl start <myservice.service>
+# 4. Check status: systemctl status <myservice.service>
+#--------------------------------------------------------------------
+[Unit]
+Description=Disable power management for wlan0
+Requires=sys-subsystem-net-devices-wlan0.device
+After=network.target
+Wants=wifi-powersave-off.timer
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+ExecStart=/usr/local/bin/wifi-powersave-off.sh false
+
+#Print messages
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+[Unit]
+Description=enables/disables wpa_supplicant_daemon.service
+Wants=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=true
+
+ExecStartPre=/bin/systemctl enable wpa_supplicant_netplan_daemon_kill.service
+ExecStartPre=/bin/systemctl start wpa_supplicant_netplan_daemon_kill.service
+ExecStartPre=/bin/systemctl enable wpa_supplicant_daemon.service
+ExecStart=/usr/local/bin/wpa_supplicant_daemon.sh enable
+
+ExecStop=/bin/systemctl disable wpa_supplicant_netplan_daemon_kill.service
+ExecStop=/bin/systemctl stop wpa_supplicant_netplan_daemon_kill.service
+ExecStop=/usr/local/bin/wpa_supplicant_daemon.sh disable
+
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

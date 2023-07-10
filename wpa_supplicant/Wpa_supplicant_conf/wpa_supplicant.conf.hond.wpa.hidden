@@ -1,0 +1,6 @@
+network={
+	ssid="hond"
+	key_mgmt=WPA-PSK
+	psk="viezevuilehond"
+	scan_ssid=1
+}

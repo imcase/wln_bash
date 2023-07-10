@@ -1,0 +1,5 @@
+#---INSTALL SOFTWARE
+sudo apt -y install dnsmasq
+sudo apt -y install hostapd
+sudo apt -y install iw
+sudo apt -y install wireless-tools 

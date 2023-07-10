@@ -1,0 +1,23 @@
+#--------------------------------------------------------------------
+# Remark:
+#   Please do not enable/disable/stop/start this service.
+#   Use 'ntios-net-autoreconnectonboot.service' instead.
+#--------------------------------------------------------------------
+[Unit]
+Description=restores the ethernet interfaces' ip-address to user-defined settings before shutdown
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+
+ExecStart=/usr/local/bin/ntios-net-autoresetconnect.sh disable
+TimeoutStartSec=0
+
+StandardInput=journal+console
+StandardOutput=journal+console
+
+[Install]
+WantedBy=shutdown.target

@@ -1,0 +1,22 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      addresses: [172.31.1.9/24]
+      nameservers:
+        addresses: [8.8.8.8, 172.31.1.254]
+      routes:
+        - to: 0.0.0.0/0
+          via: 172.31.1.254
+          metric: 0
+      addresses: [fe80:172:31:1::9/64]
+      nameservers:
+        addresses: [fe80:172:31:1::254, 2001:4860:4860::8888]
+      routes:
+        - to: ::/0
+          via: fe80:172:31:1::254
+          metric: 0
+    eth1:
+      dhcp4: true
+      dhcp6: true

@@ -1,0 +1,17 @@
+#---DISABLE WPA_SUPPLICANT.SERVICE (if present)
+sudo systemctl disable wpa_supplicant.service
+
+#---STOP WPA_SUPPLICANT.SERVICE (if present)
+sudo systemctl stop wpa_supplicant.service
+
+#---KILL ALL WPA_SUPPLICANT DAEMON
+#Get all wpa_supplicant pids
+local ps_pidList_string=`ps axf | grep -E "wpa_supplicant.*$wlan0" | grep -v "grep" | awk '{print $1}' 2>&1`
+
+#Convert string to array
+eval "ps_pidList_array=(${ps_pidList_string})"
+
+#Kill pids
+for ps_pidList_item in "${ps_pidList_array[@]}"; do 
+	kill -9 ${ps_pidList_item}
+done

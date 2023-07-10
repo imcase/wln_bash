@@ -1,0 +1,16 @@
+[Unit]
+Description=Start/Stop iptables/ip6tables service
+Wants=network.target
+After=enable-ufw-before-login.service
+After=dnsmasq.service
+
+[Service]
+Type=oneshot
+#User MUST BE SET TO 'root'
+User=root
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '/sbin/iptables-restore < /etc/iptables/rules.v4'
+ExecStop=/bin/bash -c '/sbin/iptables-restore < /etc/iptables/rules_org.v4'
+
+[Install]
+WantedBy=multi-user.target
